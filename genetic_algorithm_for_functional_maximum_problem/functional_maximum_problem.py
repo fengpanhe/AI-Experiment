@@ -16,17 +16,17 @@ class genetic_algorithm(object):
         self.pc = pc
         self.pm = pm
 
-    def convert_to_decimal(self,binary_figure):
+    def convert_to_decimal(self, binary_figure):
         # print(binary_figure + '  len:' + str(math.pow(2, len(binary_figure))))
-        '''把二进制数转化为【0,9】的数'''
-        decimal_figure = int(binary_figure,2)*9/math.pow(2, len(binary_figure))
+        '''把二进制数转化为[0,9]的数'''
+        decimal_figure = int(binary_figure, 2) * 9 / math.pow(2, len(binary_figure))
         return decimal_figure
 
 
     def calc_fitness(self, val):
         x = self.convert_to_decimal(val)
         y = x + 10 * math.sin(5 * x) + 7 * math.cos(4 * x)
-        return y
+        return y + 17
 
     def crossover(self, chromosome1, chromosome2):
         if random.random() < self.pc:
@@ -112,7 +112,7 @@ class genetic_algorithm(object):
         for chromosome in population:
             chromosomes_fitness.append(self.calc_fitness(chromosome))
         
-        return max(chromosomes_fitness)
+        return max(chromosomes_fitness) - 17
 
 def main():
     test = genetic_algorithm(500, 24, 0.6, 0.01)
