@@ -2,23 +2,17 @@ from PIL import Image
 import numpy as np
 from numpy import *
 import  os
-
 import random
 import matplotlib.pyplot as plt
 
-# from Sigmoid import Sigmoid
-# from Layer import Layer
 from Network import Network
+from config import configs
 
-# DIRECTION = ['sunglasses', 'open']
 DIRECTION = ['left', 'straight', 'up', 'right']
 NAME = ['an2i', 'at33', 'boland', 'bpm', 'ch4f', 'cheyer', 'choon', 'danieln', 'glickman', 'karyadi', 'kawamura', 'kk49', 'megak', 'mitchell', 'night', 'phoebe', 'saavik', 'steffi', 'sz24', 'tammo'
 ]
 SMILIES = ['neutral', 'angry', 'happy', 'sad']
 SUNGLASSES = ['sunglasses', 'open']
-
-# COLOR = ['008000','98FB98','90EE90','9ACD32','ADFF2F','7FFF00','7CFC00','00FF00','32CD32','00FA9A','00FF7F','66CDAA','7FFFD4','20B2AA','3CB371','2E8B57','8FBC8F','228B22','006400','6B8E23','808000','556B2F','008080']
-COLOR = ['#FFFF00','#FFD700','#FFBF00','#FFA500','#FF4D00','#FF2400','#FF00FF','#FF0000','#E32636','#CCFF00','#CCCCFF','#8B00FF','#7FFFD4','#66FF00','#6495ED','#5E86C1','#4169E1','#30D5C8','#2A52BE','#1E90FF','#082567','#00FFFF','#007FFF','#0047AB','#003399','#003366','#003153','#002FA7','#0000FF','#000080']
 FACETYPE = ['face_name','face_direction','face_smilies','face_sunglasses']
 def read_img(img_path):
     im = Image.open(img_path).convert("L")
@@ -98,19 +92,32 @@ pass
 
 
 def train_test(train_data, test_data, train_type, hidden_sigmoid_num = 3, eta = 0.3, momentum = 0.3, train_times = 100) :
+    '''
+    train_data：训练数据
+    test_data：测试数据 
+    train_type：训练类型 
+    hidden_sigmoid_num：隐藏单元数目 
+    eta：学习率 
+    momentum：冲量 
+    train_times：训练次数
+    '''
     input_sigmoid_num =  train_data['imgs'].shape[1]
     output_sigmoid_num = train_data[train_type].shape[1]
+    #初始化网络
     network = Network(3, [input_sigmoid_num,hidden_sigmoid_num,output_sigmoid_num], eta, momentum)
+
     train_diff_vals = np.zeros(train_times)
     test_diff_vals = np.zeros(train_times)
     train_errors_times = np.zeros(train_times)
     test_errors_times = np.zeros(train_times)
     for i in range(train_times):
         train_result = network.train(train_data['imgs'],train_data[train_type])
+
         train_diff_vals[i] = train_result['diff_val']
         train_errors_times[i] = train_result['error_times']
 
         test_result = network.test(test_data['imgs'], test_data[train_type])
+
         test_diff_vals[i] = test_result['diff_val']
         test_errors_times[i] = test_result['error_times']
     pass
@@ -135,26 +142,13 @@ def draw(results,train_data_size,test_data_size):
         test_diff_vals = result_data['test_diff_vals']/(2 * test_data_size)
         train_errors_rate = 1 - result_data['train_errors_times'] / train_data_size
         test_errors_rate = 1 - result_data['test_errors_times'] / test_data_size
-
-        # # plt.figure(graph_name + '_diff')
-        # plt.plot(range(train_diff_vals.shape[0]),train_diff_vals,'-x',color = colormap(3),label = 'train_diff' + result_data['train_name'])
-        # plt.plot(range(test_diff_vals.shape[0]),test_diff_vals,'-+', color =colormap(5),label =  'test_diff' + result_data['train_name'])
-
-
-
-        # # plt.figure(graph_name + '_rate')
-        # plt.plot(range(train_errors_rate.shape[0]),train_errors_rate,'-x',color = colormap(3),label = 'train_rate' + result_data['train_name'])
-        # plt.plot(range(test_errors_rate.shape[0]),test_errors_rate,'-+',color = colormap(5),label = 'test_rate' + result_data['train_name'])
-
         plt.subplot(121)
         plt.plot(range(train_diff_vals.shape[0]),train_diff_vals,color = colormap(3),label = 'train_diff' + result_data['train_name'])
         plt.plot(range(test_diff_vals.shape[0]),test_diff_vals, color =colormap(5),label =  'test_diff' + result_data['train_name'])
         plt.subplot(122) 
         plt.plot(range(train_errors_rate.shape[0]),train_errors_rate,color = colormap(3),label = 'train_rate' + result_data['train_name'])
         plt.plot(range(test_errors_rate.shape[0]),test_errors_rate,color = colormap(5),label = 'test_rate' + result_data['train_name'])
-
         i += 1
-
     plt.subplot(121)
     # plt.figure(graph_name + '_diff')
     plt.xlabel('训练次数') # 给 x 轴添加标签
@@ -174,47 +168,34 @@ def draw(results,train_data_size,test_data_size):
 
 
 def main():
-    img_name_list = get_imgs_path('../faces_4/')
+    img_name_list = get_imgs_path(configs['IMGPATH'])
     random.shuffle(img_name_list)
 
     train_data = get_imgs(img_name_list[:300])
     test_data = get_imgs(img_name_list[300:])
+
     train_data_size = len(train_data['imgs'])
     test_data_size = len(test_data['imgs'])
 
-    print(train_data_size)
-    print(test_data_size)
-    train_type = 'face_direction'
+    print('训练集大小: ' + str(train_data_size))
+    print('测试集大小: ' + str(test_data_size))
+
+    
     plt.rcParams['font.sans-serif']=['SimHei']
 
-    # result_datas = []
-    # for sigmoid_num in range(10):
-    #     result = train_test(train_data, test_data, train_type, sigmoid_num, 0.3, 0.3, 100)
-    #     result_datas.append(result)
-    # draw({'graph_name':train_type + '-sigmoid_num','result_datas':result_datas},train_data_size,test_data_size)
 
-    # result_datas = []
-    # for eta in range(10):
-    #     result = train_test(train_data, test_data, train_type, 3, eta/10, 0.3, 100)
-    #     result_datas.append(result)
-    # draw({'graph_name':train_type + '-eta','result_datas':result_datas},train_data_size,test_data_size)
+    train_type = 'face_direction'
+    result_datas = []
 
-    # result_datas = []
-    # for momentum in range(10):
-    #     result = train_test(train_data, test_data, train_type, 3, 0.3, momentum/10, 100)
-    #     result_datas.append(result)
-    # draw({'graph_name':train_type + '-momentum','result_datas':result_datas},train_data_size,test_data_size)
+    result = train_test(train_data, test_data, train_type, 20, 0.3, 0.3, 100)
 
-    for train_type in FACETYPE[2:3]:
-        result_datas = []
-        result = train_test(train_data, test_data, train_type, 20, 0.3, 0.3, 600)
-        result_datas.append(result)
-        draw({'graph_name':train_type,'result_datas':result_datas},train_data_size,test_data_size)
-    # train_type = FACETYPE[0]
-    # result_datas = []
-    # result = train_test(train_data, test_data, train_type, 3, 0.1, 0.1, 600)
-    # result_datas.append(result)
-    # draw({'graph_name':train_type,'result_datas':result_datas},train_data_size,test_data_size)
+    result_datas.append(result)
+    print('train_diff_vals: ' + str(result['train_diff_vals']))
+    print()
+    print('train_errors_times: ' + str(result['train_errors_times']))
+    print('test_diff_vals: ' + str(result['test_diff_vals']))
+    print('test_errors_times: ' + str(result['test_errors_times']))        
+    draw({'graph_name':train_type,'result_datas':result_datas},train_data_size,test_data_size)
 
     plt.show()
 main()
