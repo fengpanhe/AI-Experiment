@@ -48,6 +48,7 @@ class Population(object):
 
         population_new = []
 
+
         for individual in self.population[int(self.population_size * 9 / 10):]:
             population_new.append(individual)
 
