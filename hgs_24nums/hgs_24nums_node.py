@@ -1,12 +1,11 @@
-import numpy as np
-import math
+from config import configs
 
 
 class HGS24NumsNode(object):
     start_nums_table = ''
     end_nums_table = ''
-    r_num = 5
-    c_num = 5
+    r_num = configs['ROWNUM']
+    c_num = configs['COLNUM']
     '''
     启发式搜索算法的节点
     '''

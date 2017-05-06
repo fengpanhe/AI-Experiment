@@ -1,7 +1,8 @@
-import numpy as np
-from hgs_24nums_node import HGS24NumsNode as Node
 import random
 import operator
+
+from hgs_24nums_node import HGS24NumsNode as Node
+from config import configs
 
 open_list = []
 closed_list = []
@@ -89,11 +90,6 @@ def hgs(start_nums_table, end_nums_table):
 
         print('@' + str(len(open_list) + len(closed_list)) + " ")
         open_list.sort(key=node_compare)
-        # string = ' '
-        # for nodess in open_list:
-        #     string += str(nodess.score)
-        #     string += ' '
-        # print(string)
 
 
 def inversion_num_is_even(nums):
@@ -114,8 +110,8 @@ def inversion_num_is_even(nums):
 
 
 def main():
-    r_num = 5
-    c_num = 5
+    r_num = configs['ROWNUM']
+    c_num = configs['COLNUM']
     nums = []
     for i in range(r_num * c_num):
         nums.append(i)
