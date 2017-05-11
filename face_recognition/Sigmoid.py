@@ -1,14 +1,14 @@
 import numpy as np
 import math
 
-class Sigmoid(object):
 
+class Sigmoid(object):
 
     def __init__(self, weight_num):
         """
         weight_num:输入值个数
         """
-        self.weights = np.random.random(weight_num + 1)/5 - 0.1
+        self.weights = np.random.random(weight_num + 1) / 5 - 0.1
         self.dif_val = np.zeros(weight_num + 1)
         self.output = 0
         self.delta = 0
@@ -20,7 +20,7 @@ class Sigmoid(object):
         output:预测结果
         """
         dot_val = np.dot(input_val, self.weights[1:]) + self.weights[0]
-        self.output = 1/(1 + math.pow(math.e, -1 * dot_val))
+        self.output = 1 / (1 + math.pow(math.e, -1 * dot_val))
         return self.output
 
     def calc_hidden_sigmoid_delta(self, next_layer_wd_sum):
@@ -39,7 +39,7 @@ class Sigmoid(object):
         """
         更新权值
         """
-        self.dif_val[1:] = eta * self.delta * input_val + momentum * self.dif_val[1:]
+        self.dif_val[1:] = eta * self.delta * \
+            input_val + momentum * self.dif_val[1:]
         self.dif_val[0] = eta * self.delta + momentum * self.dif_val[0]
         self.weights += self.dif_val
-pass
