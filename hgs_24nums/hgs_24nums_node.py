@@ -63,11 +63,11 @@ class HGS24NumsNode(object):
         '''
         index = self.blank_location - HGS24NumsNode.c_num
         if self.last_move == 'down' or index < 0:
-            return False
-        self.last_move = 'up'
-
-        self.blank_move(index)
-        return True
+            return None
+        node = self.new_node()
+        node.last_move = 'up'
+        node.blank_move(index)
+        return node
 
     def blank_down(self):
         '''
@@ -76,10 +76,11 @@ class HGS24NumsNode(object):
         '''
         index = self.blank_location + HGS24NumsNode.c_num
         if self.last_move == 'up' or index >= len(self.nums_table):
-            return False
-        self.last_move = 'down'
-        self.blank_move(index)
-        return True
+            return None
+        node = self.new_node()
+        node.last_move = 'down'
+        node.blank_move(index)
+        return node
 
     def blank_right(self):
         '''
@@ -88,11 +89,11 @@ class HGS24NumsNode(object):
         '''
         index = self.blank_location + 1
         if self.last_move == 'left' or index % HGS24NumsNode.c_num == 0:
-            return False
-
-        self.last_move = 'right'
-        self.blank_move(index)
-        return True
+            return None
+        node = self.new_node()
+        node.last_move = 'right'
+        node.blank_move(index)
+        return node
 
     def blank_left(self):
         '''
@@ -101,7 +102,8 @@ class HGS24NumsNode(object):
         '''
         index = self.blank_location - 1
         if self.last_move == 'right' or self.blank_location % HGS24NumsNode.c_num == 0:
-            return False
-        self.last_move = 'left'
-        self.blank_move(index)
-        return True
+            return None
+        node = self.new_node()
+        node.last_move = 'left'
+        node.blank_move(index)
+        return node

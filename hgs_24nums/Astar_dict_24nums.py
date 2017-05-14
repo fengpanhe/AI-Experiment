@@ -65,19 +65,19 @@ def hgs(start_nums_table, end_nums_table):
             return True
 
         node_n_move = []
-        node_n_move0 = node_n.new_node()
-        node_n_move1 = node_n.new_node()
-        node_n_move2 = node_n.new_node()
-        node_n_move3 = node_n.new_node()
 
-        if node_n_move0.blank_up():
-            node_n_move.append(node_n_move0)
-        if node_n_move1.blank_down():
-            node_n_move.append(node_n_move1)
-        if node_n_move2.blank_right():
-            node_n_move.append(node_n_move2)
-        if node_n_move3.blank_left():
-            node_n_move.append(node_n_move3)
+        moved_node = node_n.blank_up()
+        if moved_node is not None:
+            node_n_move.append(moved_node)
+        moved_node = node_n.blank_down()
+        if moved_node is not None:
+            node_n_move.append(moved_node)
+        moved_node = node_n.blank_right()
+        if moved_node is not None:
+            node_n_move.append(moved_node)
+        moved_node = node_n.blank_left()
+        if moved_node is not None:
+            node_n_move.append(moved_node)
 
         no_exist_per = []
         for i in range(len(node_n_move)):

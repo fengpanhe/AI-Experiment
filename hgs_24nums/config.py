@@ -1,1 +1,1 @@
-configs = {'ROWNUM': 3, 'COLNUM': 3}
+configs = {'ROWNUM': 4, 'COLNUM': 4}
