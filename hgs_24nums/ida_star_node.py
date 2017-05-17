@@ -1,4 +1,4 @@
-from config import configs
+from config import configs,addition
 
 
 class IdaStarNode(object):
@@ -30,6 +30,14 @@ class IdaStarNode(object):
         new_node.move_count = self.move_count
         return new_node
 
+    def inversion_num(self, nums_list):
+        inversion_num = 0
+        for i in range(len(nums_list) - 1):
+            for j in range(i + 1, len(nums_list)):
+                if nums_list[i] > nums_list[j]:
+                    inversion_num += 1
+        return inversion_num
+
     def calc_graph_score(self):
         h = 0
         for i in range(len(self.nums_table)):
@@ -39,6 +47,15 @@ class IdaStarNode(object):
             j_x = j % IdaStarNode.c_num
             j_y = int(j / IdaStarNode.c_num)
             h += (abs(i_x - j_x) + abs(i_y - j_y))
+        for i in range(configs['ROWNUM']):
+            nums = []
+            for j in range(configs['COLNUM']):
+                num_i = IdaStarNode.end_nums_table[i * configs['COLNUM']:i * configs['COLNUM'] + 5]
+                num = self.nums_table[i * configs['COLNUM'] + j]
+                # print(num_i)
+                if num in num_i:
+                    nums.append(num)
+            h += addition[len(nums)][self.inversion_num(nums)]
         self.score = self.move_count + h
 
     def get_blank_location(self):
