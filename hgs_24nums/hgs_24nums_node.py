@@ -43,23 +43,28 @@ class HGS24NumsNode(object):
         return inversion_num
 
     def calc_graph_score(self):
+        nums_row = [[], [], [], [], []]
+        nums_col = [[], [], [], [], []]
         h = 0
         for i in range(len(self.nums_table)):
+            if self.nums_table[i] == 0:
+                continue
             j = HGS24NumsNode.end_nums_table.index(self.nums_table[i])
             i_x = i % HGS24NumsNode.c_num
             i_y = int(i / HGS24NumsNode.c_num)
             j_x = j % HGS24NumsNode.c_num
             j_y = int(j / HGS24NumsNode.c_num)
+            if i_x == j_x:
+                nums_row[i_x].append(self.nums_table[i])
+            if i_y == j_y:
+                nums_col[i_y].append(self.nums_table[i])
             h += (abs(i_x - j_x) + abs(i_y - j_y))
-        for i in range(configs['ROWNUM']):
-            nums = []
-            for j in range(configs['COLNUM']):
-                num_i = HGS24NumsNode.end_nums_table[i * configs['COLNUM']:i * configs['COLNUM'] + 5]
-                num = self.nums_table[i * configs['COLNUM'] + j]
-                # print(num_i)
-                if num in num_i:
-                    nums.append(num)
+        for nums in nums_row:
             h += addition[len(nums)][self.inversion_num(nums)]
+        for nums in nums_col:
+            h += addition[len(nums)][self.inversion_num(nums)]
+        if self.nums_table.index(5) >= 5 and self.nums_table.index(1) % 5 != 0:
+            h += 2
         self.score = self.move_count + h
 
     def get_blank_location(self):
@@ -135,7 +140,7 @@ if __name__ == '__main__':
     HGS24NumsNode.end_nums_table = nums_list
     start_node = HGS24NumsNode(nums_list)
     nums = []
-    for j in (20, 50, 100, 150, 200, 300, 400, 500):
+    for j in (10, 20, 30, 40, 50, 60, 70, 80, 90 ,100):
         node_n = start_node
         move_steep = ''
         for i in range(j):

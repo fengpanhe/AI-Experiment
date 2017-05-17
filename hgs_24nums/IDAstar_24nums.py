@@ -62,6 +62,7 @@ class IDAStar(object):
         while result_move is None:
             result_move = self.extend_node(start_node)
             self.stop_depth += 1
+            print(self.stop_depth)
             pass
         return {
             'move_steep': result_move,

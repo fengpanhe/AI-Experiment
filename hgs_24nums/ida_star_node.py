@@ -1,4 +1,4 @@
-from config import configs,addition
+from config import configs, addition
 
 
 class IdaStarNode(object):
@@ -39,23 +39,51 @@ class IdaStarNode(object):
         return inversion_num
 
     def calc_graph_score(self):
+        nums_row = [[], [], [], [], []]
+        nums_col = [[], [], [], [], []]
         h = 0
         for i in range(len(self.nums_table)):
+            if self.nums_table[i] == 0:
+                continue
             j = IdaStarNode.end_nums_table.index(self.nums_table[i])
             i_x = i % IdaStarNode.c_num
             i_y = int(i / IdaStarNode.c_num)
             j_x = j % IdaStarNode.c_num
             j_y = int(j / IdaStarNode.c_num)
+            if i_x == j_x:
+                nums_row[i_x].append(self.nums_table[i])
+            if i_y == j_y:
+                nums_col[i_y].append(self.nums_table[i])
             h += (abs(i_x - j_x) + abs(i_y - j_y))
-        for i in range(configs['ROWNUM']):
-            nums = []
-            for j in range(configs['COLNUM']):
-                num_i = IdaStarNode.end_nums_table[i * configs['COLNUM']:i * configs['COLNUM'] + 5]
-                num = self.nums_table[i * configs['COLNUM'] + j]
-                # print(num_i)
-                if num in num_i:
-                    nums.append(num)
+        for nums in nums_row:
             h += addition[len(nums)][self.inversion_num(nums)]
+        for nums in nums_col:
+            h += addition[len(nums)][self.inversion_num(nums)]
+        # for i in range(configs['ROWNUM']):
+        #     nums_r = []
+        #     nums_c = []
+        #     num_row = IdaStarNode.end_nums_table[
+        #         i * configs['COLNUM']:i * configs['COLNUM'] + 5]
+        #     for j in range(configs['COLNUM']):
+        #         num_r = self.nums_table[i * configs['COLNUM'] + j]
+        #         num_c = self.nums_table[j * configs['COLNUM'] + i]
+        #         # print(num_i)
+        #         if num_r in num_row and num_r != 0:
+        #             nums_r.append(num_r)
+        #         if num_c % 5 == i and num_c != 0:
+        #             nums_c.append(num_c)
+        #     h += addition[len(nums_r)][self.inversion_num(nums_r)]
+        #     h += addition[len(nums_c)][self.inversion_num(nums_c)]
+        # for i in range(configs['COLNUM']):
+        #     nums = []
+        #     for j in range(configs['ROWNUM']):
+        #         num = self.nums_table[j * configs['COLNUM'] + i]
+        #         # print(num_i)
+        #         if num % 5 == i and num != 0:
+        #             nums.append(num)
+        #     h += addition[len(nums)][self.inversion_num(nums)]
+        if self.nums_table.index(5) >= 5 and self.nums_table.index(1) % 5 != 0:
+            h += 2
         self.score = self.move_count + h
 
     def get_blank_location(self):
