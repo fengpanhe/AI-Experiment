@@ -1,14 +1,14 @@
 import random
 import operator
 
-from hgs_24nums_node import HGS24NumsNode as Node
+from ida_star_node import IdaStarNode as Node
 from config import configs
 
 
 class IDAStar(object):
     """docstring for  ida_star"""
 
-    def __init__(self, start_nums_table, end_nums_table, ):
+    def __init__(self, start_nums_table, end_nums_table):
         self.start_nums_table = start_nums_table
         self.end_nums_table = end_nums_table
         self.stop_depth = 0
@@ -16,45 +16,57 @@ class IDAStar(object):
         Node.end_nums_table = end_nums_table
 
     def extend_node(self, node):
-        print(node.move_count)
+        # print(node.move_count)
         if operator.eq(node.nums_table, self.end_nums_table):
-            print('true')
-            return node
+            # print('true')
+            return node.last_move
         if node.score > self.stop_depth:
             return None
-        return_node = None
+        return_move = None
         moved_node = node.blank_up()
         if moved_node is not None:
-            return_node = self.extend_node(moved_node)
-            if return_node is not None:
-                return return_node
+            return_move = self.extend_node(moved_node)
+            if return_move is not None:
+                return node.last_move + return_move
         moved_node = node.blank_down()
         if moved_node is not None:
-            return_node = self.extend_node(moved_node)
-            if return_node is not None:
-                return return_node
+            return_move = self.extend_node(moved_node)
+            if return_move is not None:
+                return node.last_move + return_move
         moved_node = node.blank_right()
         if moved_node is not None:
-            return_node = self.extend_node(moved_node)
-            if return_node is not None:
-                return return_node
+            return_move = self.extend_node(moved_node)
+            if return_move is not None:
+                return node.last_move + return_move
         moved_node = node.blank_left()
         if moved_node is not None:
-            return_node = self.extend_node(moved_node)
-            if return_node is not None:
-                return return_node
+            return_move = self.extend_node(moved_node)
+            if return_move is not None:
+                return node.last_move + return_move
         return None
 
     def solve(self):
         start_node = Node(self.start_nums_table)
         self.stop_depth += start_node.score
+        # h = 0
+        # for i in range(len(self.start_nums_table)):
+        #     j = self.end_nums_table.index(self.start_nums_table[i])
+        #     i_x = i % configs['COLNUM']
+        #     i_y = int(i / configs['COLNUM'])
+        #     j_x = j % configs['COLNUM']
+        #     j_y = int(j / configs['COLNUM'])
+        #     h += (abs(i_x - j_x) + abs(i_y - j_y))
+        # self.stop_depth = h
         print(self.stop_depth)
-        result_node = None
-        while result_node is None:
-            result_node = self.extend_node(start_node)
+        result_move = None
+        while result_move is None:
+            result_move = self.extend_node(start_node)
             self.stop_depth += 1
             pass
-        print(result_node.move_count)
+        return {
+            'move_steep': result_move,
+            'move_count': len(result_move)
+        }
 
 
 def inversion_num_is_even(nums):
@@ -96,7 +108,7 @@ def main():
     print('end_nums_table:')
     print(end_nums_table)
     ida_star = IDAStar(start_nums_table, end_nums_table)
-    ida_star.solve()
+    print(ida_star.solve())
 
 
 if __name__ == '__main__':
