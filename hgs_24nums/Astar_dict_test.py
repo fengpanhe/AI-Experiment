@@ -1,4 +1,4 @@
-from IDAstar_24nums import IDAStar
+
 from Astar_dict_24nums import AStar
 
 import time
@@ -18,14 +18,6 @@ def main():
         print('AStar')
         print(a_star.solve())
         print(t1 - t0)
-
-        t0 = time.time()
-        ida_start = IDAStar(pazzle, end_pazzle)
-        t1 = time.time()
-        print('IDAStar')
-        print(ida_start.solve())
-        print(t1 - t0)
-
     pass
 
 
