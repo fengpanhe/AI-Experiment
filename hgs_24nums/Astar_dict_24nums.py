@@ -1,7 +1,7 @@
 import random
 import operator
 import bisect
-
+import time
 from hgs_24nums_node import HGS24NumsNode as Node
 from config import configs
 
@@ -46,7 +46,7 @@ class AStar(object):
         start_node = Node(self.start_nums_table)
 
         self.open_list_insert(start_node)
-
+        t = 0
         node_n = None
         while True:
             if len(self.open_list) == 0:
@@ -59,11 +59,14 @@ class AStar(object):
 
             if operator.eq(node_n.nums_table, self.end_nums_table):
                 break
+            
             node_n_move = []
-
+            t0 = time.time()
             moved_node = node_n.blank_up()
+            t1 = time.time()
             if moved_node is not None:
                 node_n_move.append(moved_node)
+                t = t1 - t0
             moved_node = node_n.blank_down()
             if moved_node is not None:
                 node_n_move.append(moved_node)
@@ -106,7 +109,7 @@ class AStar(object):
 
             # print('@' + str(len(self.open_list) + len(self.closed_dict)) + " ")
             # self.open_list.sort(key=node_compare)
-
+        print(t)
         node_tmp = node_n.last_node
         move_steep = node_tmp.last_move
         while True:

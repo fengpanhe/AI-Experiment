@@ -1,5 +1,6 @@
 import random
 import operator
+import time
 
 from ida_star_node import IdaStarNode as Node
 from config import configs
@@ -14,6 +15,7 @@ class IDAStar(object):
         self.stop_depth = 0
         Node.start_nums_table = start_nums_table
         Node.end_nums_table = end_nums_table
+        self.t = 0
 
     def extend_node(self, node):
         # print(node.move_count)
@@ -23,8 +25,11 @@ class IDAStar(object):
         if node.score > self.stop_depth:
             return None
         return_move = None
+        t0 = time.time()
         moved_node = node.blank_up()
+        t1 = time.time()
         if moved_node is not None:
+            self.t = t1 - t0
             return_move = self.extend_node(moved_node)
             if return_move is not None:
                 return node.last_move + return_move
@@ -48,15 +53,7 @@ class IDAStar(object):
     def solve(self):
         start_node = Node(self.start_nums_table)
         self.stop_depth += start_node.score
-        # h = 0
-        # for i in range(len(self.start_nums_table)):
-        #     j = self.end_nums_table.index(self.start_nums_table[i])
-        #     i_x = i % configs['COLNUM']
-        #     i_y = int(i / configs['COLNUM'])
-        #     j_x = j % configs['COLNUM']
-        #     j_y = int(j / configs['COLNUM'])
-        #     h += (abs(i_x - j_x) + abs(i_y - j_y))
-        # self.stop_depth = h
+
         print(self.stop_depth)
         result_move = None
         while result_move is None:
@@ -64,6 +61,7 @@ class IDAStar(object):
             self.stop_depth += 1
             print(self.stop_depth)
             pass
+        print(self.t)
         return {
             'move_steep': result_move,
             'move_count': len(result_move)
