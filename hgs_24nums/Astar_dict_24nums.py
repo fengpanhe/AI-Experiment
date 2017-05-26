@@ -59,7 +59,7 @@ class AStar(object):
 
             if operator.eq(node_n.nums_table, self.end_nums_table):
                 break
-            
+
             node_n_move = []
             t0 = time.time()
             moved_node = node_n.blank_up()
