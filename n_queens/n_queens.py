@@ -1,132 +1,157 @@
 import random
 import numpy as np
+import time
 
 
 class NQueens(object):
     def __init__(self, n):
         self.queens_num = n
-        self.queens_location = []
-        self.conflict_matrix = np.zeros((n, n), int)
+        self.queens_location = np.arange(0, self.queens_num)
+        self.conflict_slope1 = set()
+        self.conflict_slope2 = set()
+        self.slope_queens1 = {}
+        self.slope_queens2 = {}
         self.conflict_num = 0
-        for i in range(self.queens_num):
-            self.queens_location.append(i)
 
     def get_conflict_num(self):
-        self.conflict_num = np.count_nonzero(self.conflict_matrix)
-        print(self.conflict_num)
         return self.conflict_num
 
     def reset_board(self):
         '''复盘'''
+        print('reset')
         random.shuffle(self.queens_location)
-        self.conflict_matrix = np.zeros((self.queens_num, self.queens_num), int)
-        for i in range(self.queens_num):
-            for j in range(i + 1, self.queens_num):
-                if abs(j - i) == abs(self.queens_location[i] -
-                                     self.queens_location[j]):
-                    self.conflict_matrix[i][j] = 1
-                    self.conflict_matrix[j][i] = 1
-    # def conflict_i_j(self, i, j):
-    #     if i in self.conflict_dict:
-    #         if j not in self.conflict_dict[i]:
-    #             self.conflict_dict[i][j] = 1
-    #             self.conflict_num += 1
-    #     else:
-    #         self.conflict_dict[i] = {j: 1}
-    #         pass
-    #     if j in self.conflict_dict:
-    #         if i not in self.conflict_dict[j]:
-    #             self.conflict_dict[j][i] = 1
-    #             self.conflict_num += 1
-    #     else:
-    #         self.conflict_dict[j] = {i: 1}
-    #         pass
+        self.conflict_slope1 = set()
+        self.conflict_slope2 = set()
+        self.slope_queens1 = {}
+        self.slope_queens2 = {}
+        self.conflict_num = 0
+        col_list = set(self.queens_location)
+        index = 0
+        while index < self.queens_num - 100:
+            col = col_list.pop()
+            slope1 = index - col
+            slope2 = index + col
+            if slope1 not in self.slope_queens1 and slope2 not in self.slope_queens2:
+                self.queens_location[index] = col
+                self.add_queen(index)
+                index += 1
+            else:
+                col_list.add(col)
+        for i in col_list:
+            self.queens_location[index] = i
+            self.add_queen(index)
+            index += 1
+
+    def add_queen(self, i):
+        slope1 = i - self.queens_location[i]
+        slope2 = i + self.queens_location[i]
+        if slope1 in self.slope_queens1:
+            self.conflict_num += 1
+            self.slope_queens1[slope1].add(i)
+            self.conflict_slope1.add(slope1)
+        else:
+            self.slope_queens1[slope1] = set([i])
+
+        if slope1 == slope2:
+            return
+
+        if slope2 in self.slope_queens2:
+            self.conflict_num += 1
+            self.slope_queens2[slope2].add(i)
+            self.conflict_slope2.add(slope2)
+        else:
+            self.slope_queens2[slope2] = set([i])
+
+    def remove_queen(self, i):
+        slope1 = i - self.queens_location[i]
+        slope2 = i + self.queens_location[i]
+        self.slope_queens1[slope1].remove(i)
+
+        if len(self.slope_queens1[slope1]) == 0:
+            self.slope_queens1.pop(slope1)
+        elif len(self.slope_queens1[slope1]) == 1:
+            self.conflict_slope1.remove(slope1)
+            self.conflict_num -= 1
+        else:
+            self.conflict_num -= 1
+
+        if slope1 == slope2:
+            return
+
+        self.slope_queens2[slope2].remove(i)
+        if len(self.slope_queens2[slope2]) == 0:
+            self.slope_queens2.pop(slope2)
+        elif len(self.slope_queens2[slope2]) == 1:
+            self.conflict_slope2.remove(slope2)
+            self.conflict_num -= 1
+        else:
+            self.conflict_num -= 1
+
+    def swap(self, x, y):
+        if x == y:
+            return False
+        fx = self.queens_location[x]
+        fy = self.queens_location[y]
+        xy_conflict_num = self.conflict_num
+
+        self.remove_queen(x)
+        self.remove_queen(y)
+        self.queens_location[x] = fy
+        self.queens_location[y] = fx
+        self.add_queen(x)
+        self.add_queen(y)
+
+        yx_conflict_num = self.conflict_num
+
+        if xy_conflict_num < yx_conflict_num:
+            self.remove_queen(x)
+            self.remove_queen(y)
+            self.queens_location[x] = fx
+            self.queens_location[y] = fy
+            self.add_queen(x)
+            self.add_queen(y)
+            return False
+        return True
 
     def solve(self):
         self.reset_board()
+        print(self.conflict_num)
         next_conflict_num = 0
+        times = 0
         count = 0
         while(True):
+            if self.conflict_num == 0:
+                print('true')
+                break
             if next_conflict_num == self.conflict_num:
                 count += 1
-            else:
-                count = 0
+            if count > 3:
+                self.reset_board()
+                times += 1
             next_conflict_num = self.conflict_num
             print('next_conflict_num' + str(next_conflict_num))
-            if count > self.queens_num:
-                self.reset_board()
-                count = 0
 
-            # print(self.queens_location)
-            # print(self.conflict_matrix)
-            if self.get_conflict_num() == 0:
-                print('true')
-                print(self.conflict_matrix)
-                return self.queens_location
+            tmp_conflict_queens = set()
+            for tmp_slope in self.conflict_slope1:
+                for x in self.slope_queens1[tmp_slope]:
+                    tmp_conflict_queens.add(x)
+            for tmp_slope in self.conflict_slope2:
+                for x in self.slope_queens2[tmp_slope]:
+                    tmp_conflict_queens.add(x)
+            for x in tmp_conflict_queens:
+                for y in range(0, self.queens_num):
+                    if self.swap(x, y):
+                        break
 
-            rows = np.where(self.conflict_matrix == 1)[0]
-            # cols = np.where(self.conflict_matrix == 1)[1]
-            index = random.randint(0, len(rows) - 1)
-            x = rows[index]
-            y = random.randint(0, self.queens_num - 1)
-            # print(str(x) + str(y))
-            xy_conflict_num = 0
-            xy_conflict_num += np.count_nonzero(self.conflict_matrix[x])
-            xy_conflict_num += np.count_nonzero(self.conflict_matrix[y])
-            for i in range(self.queens_num):
-                if i == x or i == y:
-                    continue
-                if self.conflict_matrix[i][x] == 1:
-                    xy_conflict_num += 1
-                if self.conflict_matrix[i][y] == 1:
-                    xy_conflict_num += 1
-            yx_conflict_num = 0
-            for i in range(self.queens_num):
-                if i == x or i == y:
-                    continue
-                if abs(i - x) == abs(self.queens_location[i] -
-                                     self.queens_location[y]):
-                    yx_conflict_num += 2
-                if abs(i - y) == abs(self.queens_location[i] -
-                                     self.queens_location[x]):
-                    yx_conflict_num += 2
-            if abs(x - y) == abs(self.queens_location[x] -
-                                 self.queens_location[y]):
-                yx_conflict_num += 2
-
-            if xy_conflict_num > yx_conflict_num:
-                tmp = self.queens_location[x]
-                self.queens_location[x] = self.queens_location[y]
-                self.queens_location[y] = tmp
-                self.conflict_matrix[x] = 0
-                self.conflict_matrix[y] = 0
-                for i in range(self.queens_num):
-                    self.conflict_matrix[i][x] = 0
-                    self.conflict_matrix[i][y] = 0
-                for i in range(self.queens_num):
-                    if i == x or i == y:
-                        continue
-                    if abs(i - x) == abs(self.queens_location[i] -
-                                         self.queens_location[x]):
-                        self.conflict_matrix[i][x] = 1
-                        self.conflict_matrix[x][i] = 1
-                    if abs(i - y) == abs(self.queens_location[i] -
-                                         self.queens_location[y]):
-                        self.conflict_matrix[i][y] = 1
-                        self.conflict_matrix[y][i] = 1
-                if abs(x - y) == abs(self.queens_location[x] -
-                                     self.queens_location[y]):
-                    self.conflict_matrix[x][y] = 1
-                    self.conflict_matrix[y][x] = 1
+        print('times')
+        print(times)
+        return self.queens_location
 
 
 if __name__ == '__main__':
-    queens_num = 1000
+    queens_num = 100000
     n_queens = NQueens(queens_num)
+    time_start = time.time()
     queens_location = n_queens.solve()
-    queens_location = [7, 5, 2, 1, 6, 0, 3, 4]
-    print(queens_location)
-    board = np.zeros((queens_num, queens_num))
-    for i in range(queens_num):
-        board[i][queens_location[i]] = 1
-    print(board)
+    time_end = time.time()
+    print(time_end - time_start)

@@ -1,9 +1,8 @@
 from PIL import Image
-import numpy as np
-from numpy import *
 import os
 import random
 import matplotlib.pyplot as plt
+import numpy as np
 
 from Network import Network
 from config import configs
@@ -30,7 +29,8 @@ pass
 
 def get_imgs_path(dir_path):
     if not os.path.exists(dir_path):
-        print("Error:path not exists")
+        print("Error:IMGPATH is path not exists")
+        exit()
     img_list = []
     list_dir = os.listdir(dir_path)
     for dir in list_dir:
@@ -244,4 +244,5 @@ def main():
     plt.show()
 
 
-main()
+if __name__ == '__main__':
+    main()

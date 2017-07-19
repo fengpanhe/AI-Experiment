@@ -1,3 +1,3 @@
 configs = {
-    'IMGPATH' : '.../faces_4/'
+    'IMGPATH': '../faces_4/'
 }

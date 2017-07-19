@@ -21,3 +21,11 @@ pillow  numpy   matplotlib
 ## genetic_algorithm_for_functional_maximum_problem
 
 参考 https://segmentfault.com/a/1190000004155021
+
+## hgs_24nums
+
+实现了Astar和IDAstar算法。代码见Astar_dict_24nums.py和IDAstar_24nums.py
+
+## n_queens
+
+实现了python和c++两个版本
